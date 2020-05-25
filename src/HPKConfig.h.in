@@ -1,0 +1,3 @@
+// the configured options and settings for HPK
+#define HPK_VERSION_MAJOR @HPK_VERSION_MAJOR@
+#define HPK_VERSION_MINOR @HPK_VERSION_MINOR@

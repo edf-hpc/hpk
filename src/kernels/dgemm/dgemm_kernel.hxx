@@ -11,11 +11,12 @@ public:
   
   // Constructor
   DgemmKernel() = default;
-  
-  std::unique_ptr<Matrix> execute(std::pair<Matrix*,Matrix*> & input){
+
+  std::unique_ptr<Matrix> execute(const std::pair<Matrix*,Matrix*> & input){
     return((*input.first)*(*input.second));
   }
   
+
 };
 
 #endif

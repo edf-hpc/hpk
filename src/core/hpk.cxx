@@ -3,6 +3,7 @@
 #include "../types/blas_matrix.hxx"
 #include "../types/openmp_matrix.hxx"
 #include "../types/tbb_matrix.hxx"
+#include "../types/pstl_matrix.hxx"
 #include "../kernels/dgemm/dgemm_kernel.hxx"
 #include "hpk_utils.hxx"
 
@@ -50,6 +51,16 @@ int main(void){
   std::cout<<"B-Tbb:"<<*mb_tbb;
   std::unique_ptr<Matrix> mc_tbb = (*ma_tbb)*(*mb_tbb);
   std::cout<<"C-Tbb:"<<*mc_tbb;
+
+  // Pstl matrix multiplication
+  std::unique_ptr<Matrix> ma_pstl = std::make_unique<PstlMatrix<double>>(2,3);
+  std::unique_ptr<Matrix> mb_pstl = std::make_unique<PstlMatrix<double>>(3,2);
+  ma_pstl->fill();
+  mb_pstl->fill();
+  std::cout<<std::endl<<"A-Pstl:"<<*ma_pstl;
+  std::cout<<"B-Pstl:"<<*mb_pstl;
+  std::unique_ptr<Matrix> mc_pstl = (*ma_pstl)*(*mb_pstl);
+  std::cout<<"C-Pstl:"<<*mc_pstl;
 
   // Dgemm Kernel with OpenMP matrices
   auto mc_kernel_openmp = run(std::pair<Matrix*,Matrix*>(ma.get(), mb.get()));

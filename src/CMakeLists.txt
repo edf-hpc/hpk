@@ -10,6 +10,7 @@ add_executable(hpk core/hpk.cxx)
 add_executable(double_dgemm ../examples/double_dgemm.cxx)
 
 set(SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 
 target_include_directories(hpk
     PRIVATE
@@ -32,7 +33,9 @@ if(BLAS_FOUND)
     target_link_libraries(double_dgemm ${BLAS_LIBRARIES})
 endif(BLAS_FOUND)
 
-
+#message("TBB found.")
+target_link_libraries(hpk -L${TBB_LIB_DIR} -ltbb)
+target_link_libraries(double_dgemm -L${TBB_LIB_DIR} -ltbb)
 
 # Install
 install (TARGETS hpk DESTINATION bin)

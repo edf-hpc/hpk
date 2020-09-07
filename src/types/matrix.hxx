@@ -1,7 +1,6 @@
 #ifndef MATRIX_HXX
 #define MATRIX_HXX
 
-#include<any>
 #include<iostream>
 
 
@@ -15,7 +14,8 @@ public:
   //  virtual Matrix<T>(size_t m, size_t n)=0;
   virtual ~Matrix(){
   };
-  virtual int random_fill(std::any min, std::any max)=0;
+
+  virtual int fill()=0;
   
   virtual std::unique_ptr<Matrix> operator*(const Matrix & other) const=0;
 

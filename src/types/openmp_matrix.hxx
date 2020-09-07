@@ -20,17 +20,21 @@ public:
   virtual ~OpenmpMatrix<T>(){
   };
   
-  int random_fill(std::any min, std::any max) override{
-    T cmin = std::any_cast<T>(min);
-    T cmax = std::any_cast<T>(max);
+  int fill() override{
 #pragma omp for
-    for(auto it_m=data_.begin(); it_m!=data_.end(); it_m++){
-      *it_m = cmin + (static_cast<T>(std::rand()) / RAND_MAX)*(cmax-cmin);
+    for(auto it_m=0; it_m!=data_.size(); it_m++){
+      //*it_m = data_.at(it_m) +1 ;
+      data_[it_m] += it_m;
+    }
+
+    if (data_.empty())
+    {
+      return 1;
     }
 
     return 0;
   }
-  
+
   std::unique_ptr<Matrix> operator*(const Matrix & other) const override{
 
     const OpenmpMatrix<T>& m_other = dynamic_cast<const OpenmpMatrix<T>&>(other);

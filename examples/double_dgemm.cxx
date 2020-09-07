@@ -12,9 +12,9 @@ std::unique_ptr<Matrix> double_dgemm(){
   std::unique_ptr<Matrix> mb = std::make_unique<MatrixType>(3,2);  
   std::unique_ptr<Matrix> mc = std::make_unique<MatrixType>(3,2);
 
-  ma->random_fill(0.0,1.0);
-  mb->random_fill(0.0,1.0);
-  mc->random_fill(0.0,1.0);
+  ma->fill();
+  mb->fill();
+  mc->fill();
 
   DgemmKernel dgemm_kernel;
   return(dgemm_kernel.execute(std::pair(dgemm_kernel.execute(std::pair(ma.get(),mb.get())).get(),

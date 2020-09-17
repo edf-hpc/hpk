@@ -6,34 +6,20 @@
 #include <memory>
 #include <vector>
 #include <sstream>
-#include "matrix.hxx"
+#include "vec_matrix.hxx"
+
 
 template<typename T>
-class BlasMatrix : public Matrix{
+class BlasMatrix : public VecMatrix<T>{
   
 public:
   
   BlasMatrix<T>(size_t m, size_t n):
-    m_(m),n_(n),data_(m*n,T()){
+    VecMatrix<T>(m, n){
   }
   virtual ~BlasMatrix<T>(){
   };
   
-  int fill() override{
-#pragma omp for
-    for(auto it_m=0; it_m!=data_.size(); it_m++){
-      //*it_m = data_.at(it_m) +1 ;
-      data_[it_m] += it_m;
-    }
-
-    if (data_.empty())
-    {
-      return 1;
-    }
-
-    return 0;
-  }
-
   std::unique_ptr<Matrix> operator*(const Matrix & other) const override{
     
     const BlasMatrix<T>& m_other = dynamic_cast<const BlasMatrix<T>&>(other);
@@ -41,35 +27,14 @@ public:
     
     // C = alpha * A * B + beta * C
     cblas_dgemm( CblasRowMajor,  CblasNoTrans, CblasNoTrans,
-		 m_, m_other.n_, n_,
-		 1, &(this->data_[0]), n_, // alpha, A, lda
+		 this->m_, m_other.n_, this->n_,
+		 1, &(this->data_[0]), this->n_, // alpha, A, lda
 		 &m_other.data_[0], m_other.n_,              // B, ldb
 		 0, &m_product->data_[0], m_other.n_); // beta, C, ldc
     
     return m_product;
   }
-  std::string to_string() const override{
-    // Print with Python formatting
-    std::ostringstream output;
-    output<<std::endl<<"[";
-    int id=0;
-    for (auto &val: data_){
-      if (id==0)
-	output<<"["<<val;
-      else if (id%n_==0)
-	output<<"],["<<val;
-      else
-	output<<","<<val;
-      id++;
-    }
-    output<<"]]"<<std::endl;
-    return output.str();
-  }
 
-private:
-  size_t m_;
-  size_t n_;
-  std::vector<T> data_;
 };
 
 

@@ -7,73 +7,36 @@
 #include <omp.h>
 #include <vector>
 #include <sstream>
-#include "matrix.hxx"
+#include "vec_matrix.hxx"
 
 template<typename T>
-class OpenmpMatrix : public Matrix{
+class OpenmpMatrix : public VecMatrix<T>{
   
 public:
   
   OpenmpMatrix<T>(size_t m, size_t n):
-    m_(m),n_(n),data_(m*n,T()){
+    VecMatrix<T>(m, n){
   }
   virtual ~OpenmpMatrix<T>(){
   };
   
-  int fill() override{
-#pragma omp for
-    for(auto it_m=0; it_m!=data_.size(); it_m++){
-      //*it_m = data_.at(it_m) +1 ;
-      data_[it_m] += it_m;
-    }
-
-    if (data_.empty())
-    {
-      return 1;
-    }
-
-    return 0;
-  }
-
   std::unique_ptr<Matrix> operator*(const Matrix & other) const override{
 
     const OpenmpMatrix<T>& m_other = dynamic_cast<const OpenmpMatrix<T>&>(other);
     auto m_product = std::make_unique<OpenmpMatrix<T>>(this->m_,m_other.n_);
 
 #pragma omp for
-    for(int id_i=0;id_i<m_;id_i++){
+    for(int id_i=0;id_i<this->m_;id_i++){
       for(int id_j=0;id_j<m_other.n_;id_j++){
-	for(int id_k=0;id_k<n_;id_k++){
+	for(int id_k=0;id_k<this->n_;id_k++){
 	  //  cij=Sum(aik*bkj)
-	  m_product->data_[id_i*m_product->n_+id_j]+=data_[id_i*n_+id_k]*m_other.data_[id_k*m_other.n_+id_j];
+	  m_product->data_[id_i*m_product->n_+id_j]+=this->data_[id_i*this->n_+id_k]*m_other.data_[id_k*m_other.n_+id_j];
 	}
       }
     }
     
     return m_product;
   }
-  std::string to_string() const override{
-    // Print with Python formatting
-    std::ostringstream output;
-    output<<std::endl<<"[";
-    int id=0;
-    for (auto &val: data_){
-      if (id==0)
-	output<<"["<<val;
-      else if (id%n_==0)
-	output<<"],["<<val;
-      else
-	output<<","<<val;
-      id++;
-    }
-    output<<"]]"<<std::endl;
-    return output.str();
-  }
-
-private:
-  size_t m_;
-  size_t n_;
-  std::vector<T> data_;
 };
 
 
